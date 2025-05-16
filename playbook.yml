@@ -3,4 +3,4 @@
   become: true
   serial: 2
   roles:
-    - setup
+    - rules

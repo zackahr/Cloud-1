@@ -13,8 +13,7 @@ services:
     volumes:
       - wordpress:/var/www/html/
     ports:
-      - "8080:80"  # Expose WordPress on port 8080 (HTTP)
-
+      - "8080:80"
   nginx:
     build: ./nginx/
     restart: always

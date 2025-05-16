@@ -35,11 +35,6 @@
     state: directory
     mode: '0755'
 
-# - name: Copy the .env file to home directory
-#   ansible.builtin.template:
-#     src: ../templates/data.j2 
-#     dest: ~/.env
-
 - name: Copy the .env file to application directory
   ansible.builtin.template:
     src: ../templates/data.j2 
