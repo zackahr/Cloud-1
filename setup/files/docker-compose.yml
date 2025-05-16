@@ -1,0 +1,76 @@
+version: '3'
+
+services:
+
+  wordpress:
+    build: ./wordpress/
+    restart: always
+    container_name: wordpress
+    env_file:
+      - .env
+    networks:
+      - Shared
+    volumes:
+      - wordpress:/var/www/html/
+
+  nginx:
+    build: ./nginx/
+    restart: always
+    container_name: nginx
+    env_file:
+      - .env
+    networks:
+      - Shared
+    volumes:
+      - wordpress:/var/www/html/
+    ports:
+      - "443:443"
+    depends_on:
+      - wordpress
+
+
+  phpmyadmin:
+    depends_on:
+      - db
+    env_file:
+      - .env
+    image: phpmyadmin/phpmyadmin # Changed from phpmyadmin:fpm to the all-in-one image
+    container_name: phpmyadmin-cont
+    restart: always
+    networks:
+      - Shared
+
+  db:
+    build: ./mariadb/
+    restart: always
+    container_name: mariadb
+    env_file:
+      - .env
+    volumes:
+      - mariadb:/var/lib/mysql
+    networks:
+      - Shared
+    depends_on:
+      - wordpress
+
+networks:
+  Shared:
+    name: Shared
+
+volumes:
+  wordpress:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /etc/files
+  mariadb:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /etc/db
+  # PhpMyAdmin: # If the volume above is removed, you might not need this definition
+              # or you need to ensure /etc/phpmyadmin on host is correctly populated
+              # if you intend to use it. For a standard setup, it's often not needed
+              # or should be used for specific config files like config.inc.php.
