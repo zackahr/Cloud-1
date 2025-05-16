@@ -12,6 +12,8 @@ services:
       - Shared
     volumes:
       - wordpress:/var/www/html/
+    ports:
+      - "8080:80"  # Expose WordPress on port 8080 (HTTP)
 
   nginx:
     build: ./nginx/
@@ -25,20 +27,22 @@ services:
       - wordpress:/var/www/html/
     ports:
       - "443:443"
+      - "80:80"
     depends_on:
       - wordpress
-
 
   phpmyadmin:
     depends_on:
       - db
     env_file:
       - .env
-    image: phpmyadmin/phpmyadmin # Changed from phpmyadmin:fpm to the all-in-one image
+    image: phpmyadmin/phpmyadmin
     container_name: phpmyadmin-cont
     restart: always
     networks:
       - Shared
+    ports:
+      - "8081:80"
 
   db:
     build: ./mariadb/
@@ -55,7 +59,6 @@ services:
 
 networks:
   Shared:
-    name: Shared
 
 volumes:
   wordpress:
@@ -70,7 +73,3 @@ volumes:
       type: none
       o: bind
       device: /etc/db
-  # PhpMyAdmin: # If the volume above is removed, you might not need this definition
-              # or you need to ensure /etc/phpmyadmin on host is correctly populated
-              # if you intend to use it. For a standard setup, it's often not needed
-              # or should be used for specific config files like config.inc.php.
